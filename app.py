@@ -2,14 +2,15 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import json, os, re
 from dotenv import load_dotenv
-import anthropic
+from groq import Groq
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+MODEL  = "llama-3.3-70b-versatile"   # fast + smart, free tier available
 
 # ─────────────────────────────────────────────
 #  Serve Frontend
@@ -41,12 +42,23 @@ def recommend():
     prompt = build_prompt(category, weather, skin_tone, body_shape,
                           occasion, gender, budget, style_pref, extra_notes)
 
-    message = client.messages.create(
-        model="claude-sonnet-4-20250514",
+    completion = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a world-class AI fashion stylist. Always respond with valid JSON inside a ```json block. Never add extra text outside the JSON block."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.7,
         max_tokens=1500,
-        messages=[{"role": "user", "content": prompt}]
     )
-    response_text = message.content[0].text
+
+    response_text = completion.choices[0].message.content
 
     try:
         json_match = re.search(r"```json\s*(.*?)\s*```", response_text, re.DOTALL)
@@ -63,13 +75,12 @@ def recommend():
 def build_prompt(category, weather, skin_tone, body_shape,
                  occasion, gender, budget, style_pref, extra_notes):
 
-    base = f"""You are a world-class AI fashion stylist. Return ONLY a JSON object inside a ```json block.
-Gender: {gender} | Budget: {budget} | Style preference: {style_pref or 'any'}
+    base = f"""Gender: {gender} | Budget: {budget} | Style preference: {style_pref or 'any'}
 Extra notes: {extra_notes or 'none'}\n\n"""
 
     schemas = {
         "weather": f"""Weather condition: {weather}. Recommend 2 complete outfits suited for this weather.
-```json
+``````````````json
 {{
   "category": "Weather-Based",
   "weather": "{weather}",
@@ -81,10 +92,10 @@ Extra notes: {extra_notes or 'none'}\n\n"""
   "fabrics": ["fabric1", "fabric2"],
   "avoid": ["item1", "item2"]
 }}
-```""",
+`````````````""",
 
         "skin_tone": f"""Skin tone: {skin_tone}. Recommend colors and outfits that complement this complexion.
-```json
+````````````json
 {{
   "category": "Skin Tone Based",
   "skin_tone": "{skin_tone}",
@@ -97,10 +108,10 @@ Extra notes: {extra_notes or 'none'}\n\n"""
   "patterns": ["p1", "p2"],
   "makeup_tip": "..."
 }}
-```""",
+```````````""",
 
         "body_shape": f"""Body shape: {body_shape}. Recommend flattering outfits for this figure.
-```json
+``````````json
 {{
   "category": "Body Shape Based",
   "body_shape": "{body_shape}",
@@ -113,10 +124,10 @@ Extra notes: {extra_notes or 'none'}\n\n"""
   "avoid": ["item1", "item2"],
   "pro_tip": "..."
 }}
-```""",
+`````````""",
 
         "gym": f"""Gym/Workout outfit recommendations for {gender}.
-```json
+````````json
 {{
   "category": "Gym & Workout",
   "outfits": [
@@ -128,10 +139,10 @@ Extra notes: {extra_notes or 'none'}\n\n"""
   "performance_tips": ["tip1", "tip2"],
   "brands_to_explore": ["brand1", "brand2", "brand3"]
 }}
-```""",
+```````""",
 
         "occasion": f"""Occasion: {occasion}. Provide a complete outfit guide.
-```json
+``````json
 {{
   "category": "Occasion Based",
   "occasion": "{occasion}",
@@ -144,11 +155,11 @@ Extra notes: {extra_notes or 'none'}\n\n"""
   "styling_dos": ["do1", "do2"],
   "styling_donts": ["dont1", "dont2"]
 }}
-```""",
+`````""",
 
         "accessories": f"""Accessories recommendation for context: {occasion or style_pref or 'everyday'}.
 Skin tone: {skin_tone or 'not specified'}.
-```json
+````json
 {{
   "category": "Accessories",
   "context": "...",
