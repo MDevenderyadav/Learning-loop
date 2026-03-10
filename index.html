@@ -1,941 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>VOGUE·AI — Fashion Intelligence</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-<style>
-/* ══════════════════════════════════════════
-   CSS VARIABLES & RESET
-══════════════════════════════════════════ */
-:root {
-  --ink:        #0d0b0a;
-  --cream:      #f5f0e8;
-  --gold:       #c9a84c;
-  --gold-light: #e8d5a3;
-  --blush:      #d4a5a5;
-  --sage:       #8a9e8a;
-  --slate:      #2a2e38;
-  --muted:      #7a7570;
-  --card-bg:    #faf8f4;
-  --border:     rgba(201,168,76,0.25);
-  --shadow:     0 20px 60px rgba(13,11,10,0.12);
-  --ff-serif:   'Cormorant Garamond', Georgia, serif;
-  --ff-sans:    'Montserrat', sans-serif;
-}
-
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-html { scroll-behavior:smooth }
-body {
-  font-family: var(--ff-sans);
-  background:  var(--cream);
-  color:       var(--ink);
-  min-height:  100vh;
-  overflow-x:  hidden;
-}
-
-/* Grain overlay */
-body::before {
-  content:'';
-  position:fixed; inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
-  pointer-events:none; z-index:9999; opacity:.6;
-}
-
-/* ══════════════════════════════════════════
-   HEADER
-══════════════════════════════════════════ */
-header {
-  position:relative;
-  background: var(--slate);
-  color:      var(--cream);
-  padding:    3.5rem 2rem 3rem;
-  text-align: center;
-  overflow:   hidden;
-}
-header::before {
-  content:'';
-  position:absolute; inset:0;
-  background:
-    radial-gradient(ellipse 80% 120% at 50% -20%, rgba(201,168,76,0.35) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 80%  at 80% 110%, rgba(212,165,165,0.2) 0%, transparent 60%);
-}
-.header-eyebrow {
-  font-size:.65rem; letter-spacing:.35em; font-weight:500;
-  text-transform:uppercase; color:var(--gold); opacity:.9;
-  position:relative; margin-bottom:.75rem;
-}
-header h1 {
-  font-family: var(--ff-serif);
-  font-size:   clamp(2.8rem, 7vw, 5.5rem);
-  font-weight: 300; letter-spacing:.04em;
-  line-height: 1.05; position:relative;
-}
-header h1 em { font-style:italic; color:var(--gold-light); }
-.header-sub {
-  font-size:.72rem; letter-spacing:.25em; font-weight:300;
-  color:rgba(245,240,232,.55); margin-top:1rem;
-  text-transform:uppercase; position:relative;
-}
-.gold-line {
-  width:60px; height:1px;
-  background:linear-gradient(90deg, transparent, var(--gold), transparent);
-  margin:1.5rem auto 0; position:relative;
-}
-
-/* ══════════════════════════════════════════
-   NAV TABS
-══════════════════════════════════════════ */
-.tabs-wrapper {
-  background:   var(--slate);
-  border-bottom:1px solid rgba(201,168,76,0.2);
-  overflow-x:   auto;
-  scrollbar-width: none;
-}
-.tabs-wrapper::-webkit-scrollbar { display:none }
-.tabs {
-  display:flex; white-space:nowrap;
-  max-width:1100px; margin:0 auto; padding:0 1rem;
-}
-.tab {
-  font-family:   var(--ff-sans);
-  font-size:     .6rem; letter-spacing:.22em; font-weight:500;
-  text-transform:uppercase; color:rgba(245,240,232,.45);
-  padding:1.1rem 1.4rem; cursor:pointer;
-  border:none; border-bottom:2px solid transparent;
-  background:none;
-  transition:all .3s ease; white-space:nowrap;
-  display:flex; align-items:center; gap:.5rem;
-}
-.tab:hover  { color:var(--gold-light); }
-.tab.active { color:var(--gold); border-bottom-color:var(--gold); }
-.tab-icon   { font-size:.85rem; }
-
-/* ══════════════════════════════════════════
-   MAIN
-══════════════════════════════════════════ */
-main {
-  max-width:1100px; margin:0 auto;
-  padding:2.5rem 1.5rem 4rem;
-}
-
-/* ── Panels ── */
-.panel { display:none; animation:fadeUp .45s ease both; }
-.panel.active { display:block; }
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(18px) }
-  to   { opacity:1; transform:translateY(0) }
-}
-
-/* ── Form Grid ── */
-.form-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(240px,1fr));
-  gap:1.25rem; margin-bottom:1.75rem;
-}
-.form-group { display:flex; flex-direction:column; gap:.45rem; }
-.form-group label {
-  font-size:.6rem; letter-spacing:.2em; font-weight:600;
-  text-transform:uppercase; color:var(--muted);
-}
-.form-group select,
-.form-group input,
-.form-group textarea {
-  font-family:var(--ff-sans); font-size:.82rem; font-weight:300;
-  background:var(--card-bg); border:1px solid var(--border);
-  border-radius:3px; padding:.7rem .9rem;
-  color:var(--ink); outline:none;
-  transition:border-color .25s, box-shadow .25s;
-  -webkit-appearance:none;
-}
-.form-group select:focus,
-.form-group input:focus,
-.form-group textarea:focus {
-  border-color:var(--gold);
-  box-shadow:0 0 0 3px rgba(201,168,76,.12);
-}
-.form-group select {
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a7570'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right .9rem center;
-  padding-right:2.2rem; cursor:pointer;
-}
-.form-group textarea { resize:vertical; min-height:80px; }
-
-/* ── Global Fields ── */
-.global-fields {
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
-  gap:1rem; padding:1.25rem 1.5rem;
-  background:rgba(201,168,76,.06);
-  border:1px solid var(--border); border-radius:4px;
-  margin-bottom:1.75rem;
-}
-
-/* ── Button ── */
-.btn-generate {
-  font-family:var(--ff-sans);
-  font-size:.65rem; letter-spacing:.3em; font-weight:600;
-  text-transform:uppercase;
-  background:var(--slate); color:var(--gold);
-  border:1px solid var(--gold); padding:.9rem 2.5rem;
-  border-radius:2px; cursor:pointer;
-  transition:all .3s ease;
-  display:inline-flex; align-items:center; gap:.7rem;
-}
-.btn-generate:hover    { background:var(--gold); color:var(--slate); }
-.btn-generate:disabled { opacity:.45; cursor:not-allowed; }
-.btn-generate .spinner {
-  width:14px; height:14px;
-  border:2px solid currentColor; border-top-color:transparent;
-  border-radius:50%;
-  animation:spin .7s linear infinite;
-  display:none;
-}
-.btn-generate.loading .spinner { display:inline-block; }
-@keyframes spin { to { transform:rotate(360deg) } }
-
-/* ══════════════════════════════════════════
-   RESULTS
-══════════════════════════════════════════ */
-#results { margin-top:2.5rem; display:none; }
-#results.visible { display:block; animation:fadeUp .5s ease; }
-
-.results-header {
-  display:flex; align-items:center; gap:1rem;
-  margin-bottom:1.75rem; padding-bottom:1rem;
-  border-bottom:1px solid var(--border);
-}
-.results-header h2 {
-  font-family:var(--ff-serif);
-  font-size:1.9rem; font-weight:300; font-style:italic;
-}
-.results-badge {
-  font-size:.55rem; letter-spacing:.2em; font-weight:600;
-  text-transform:uppercase;
-  background:var(--gold); color:var(--slate);
-  padding:.3rem .8rem; border-radius:20px;
-}
-
-/* ── Outfit Cards ── */
-.outfits-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
-  gap:1.5rem; margin-bottom:2rem;
-}
-.outfit-card {
-  background:var(--card-bg); border:1px solid var(--border);
-  border-radius:6px; padding:1.5rem;
-  position:relative; overflow:hidden;
-  transition:box-shadow .3s, transform .3s;
-}
-.outfit-card:hover { box-shadow:var(--shadow); transform:translateY(-3px); }
-.outfit-card::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg, var(--gold), var(--blush));
-}
-.outfit-card-number {
-  font-size:.55rem; letter-spacing:.25em; font-weight:600;
-  text-transform:uppercase; color:var(--gold); margin-bottom:.6rem;
-}
-.outfit-card h3 {
-  font-family:var(--ff-serif); font-size:1.3rem; font-weight:400;
-  margin-bottom:1rem; line-height:1.2;
-}
-.outfit-detail {
-  display:flex; gap:.6rem; padding:.5rem 0;
-  border-bottom:1px solid rgba(201,168,76,.12); font-size:.75rem;
-}
-.outfit-detail:last-child { border-bottom:none; }
-.outfit-detail-label {
-  font-weight:600; letter-spacing:.08em; text-transform:uppercase;
-  font-size:.6rem; color:var(--muted); min-width:80px; padding-top:.05rem;
-}
-.outfit-detail-value { color:var(--ink); line-height:1.4; font-weight:300; }
-
-/* ── Pills ── */
-.pills { display:flex; flex-wrap:wrap; gap:.5rem; margin:.75rem 0; }
-.pill {
-  font-size:.6rem; letter-spacing:.1em; font-weight:500;
-  text-transform:uppercase; padding:.3rem .75rem; border-radius:20px;
-  border:1px solid var(--border); background:var(--cream); color:var(--muted);
-  white-space:nowrap;
-}
-.pill.gold  { background:rgba(201,168,76,.15);  color:var(--gold);  border-color:rgba(201,168,76,.35); }
-.pill.avoid { background:rgba(180,80,80,.08);   color:#c06060;      border-color:rgba(180,80,80,.25); }
-.pill.good  { background:rgba(138,158,138,.12); color:#5a7a5a;      border-color:rgba(138,158,138,.35); }
-
-/* ── Info Blocks ── */
-.info-block {
-  background:var(--card-bg); border:1px solid var(--border);
-  border-radius:6px; padding:1.25rem 1.5rem; margin-bottom:1.25rem;
-}
-.info-block h4 {
-  font-family:var(--ff-serif); font-size:1.1rem; font-weight:400;
-  margin-bottom:.75rem; letter-spacing:.02em;
-}
-.info-block p { font-size:.8rem; font-weight:300; line-height:1.7; color:#3a3530; }
-
-.tip-block {
-  background:rgba(201,168,76,.08); border-left:3px solid var(--gold);
-  padding:1rem 1.25rem; border-radius:0 4px 4px 0; margin-top:1rem;
-}
-.tip-block p { font-size:.78rem; font-weight:300; font-style:italic; line-height:1.65; color:#4a4035; }
-
-/* ── Accessories Grid ── */
-.acc-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1rem; }
-.acc-card { background:var(--card-bg); border:1px solid var(--border); border-radius:6px; padding:1.1rem; }
-.acc-card-cat { font-size:.55rem; letter-spacing:.2em; font-weight:600; text-transform:uppercase; color:var(--gold); margin-bottom:.4rem; }
-.acc-card h4  { font-family:var(--ff-serif); font-size:1rem; margin-bottom:.4rem; }
-.acc-card p   { font-size:.72rem; font-weight:300; color:var(--muted); line-height:1.5; }
-
-/* ── Raw / Error ── */
-.raw-result {
-  background:var(--card-bg); border:1px solid var(--border);
-  border-radius:6px; padding:1.5rem;
-  font-size:.8rem; line-height:1.8; font-weight:300; white-space:pre-wrap;
-}
-.error-box {
-  background:rgba(200,60,60,.08); border:1px solid rgba(200,60,60,.3);
-  border-radius:4px; padding:1rem 1.25rem; color:#c03030; font-size:.8rem;
-}
-
-/* ══════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════ */
-footer {
-  text-align:center; padding:2rem 1rem 2.5rem;
-  border-top:1px solid var(--border);
-  font-size:.6rem; letter-spacing:.2em;
-  text-transform:uppercase; color:var(--muted);
-}
-
-/* ══════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════ */
-@media(max-width:600px){
-  header { padding:2.5rem 1rem 2rem; }
-  main   { padding:1.75rem 1rem 3rem; }
-  .tab   { padding:.9rem .9rem; }
-  .tab span.tab-text { display:none; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleAI - Fashion Recommendation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { color: #6c5ce7; margin: 0; font-size: 2.5rem; }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-primary:hover { background-color: #5849be; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>👗 StyleAI</h1>
+            <p>Your Personal Fashion Assistant</p>
+        </header>
 
-<!-- ══ HEADER ══ -->
-<header>
-  <p class="header-eyebrow">Powered by Claude AI</p>
-  <h1>VOGUE<em>·</em>AI</h1>
-  <p class="header-sub">Your Personal Fashion Intelligence System</p>
-  <div class="gold-line"></div>
-</header>
+        <div class="card">
+            <h2>Tell us about yourself</h2>
+            <form action="/recommend" method="POST">
 
-<!-- ══ TABS ══ -->
-<div class="tabs-wrapper">
-  <nav class="tabs" role="tablist">
-    <button class="tab active" onclick="switchTab(this,'weather')">
-      <span class="tab-icon">🌤</span><span class="tab-text">Weather</span>
-    </button>
-    <button class="tab" onclick="switchTab(this,'skin_tone')">
-      <span class="tab-icon">🎨</span><span class="tab-text">Skin Tone</span>
-    </button>
-    <button class="tab" onclick="switchTab(this,'body_shape')">
-      <span class="tab-icon">✦</span><span class="tab-text">Body Shape</span>
-    </button>
-    <button class="tab" onclick="switchTab(this,'gym')">
-      <span class="tab-icon">🏋️</span><span class="tab-text">Gym</span>
-    </button>
-    <button class="tab" onclick="switchTab(this,'occasion')">
-      <span class="tab-icon">🎭</span><span class="tab-text">Occasion</span>
-    </button>
-    <button class="tab" onclick="switchTab(this,'accessories')">
-      <span class="tab-icon">💍</span><span class="tab-text">Accessories</span>
-    </button>
-  </nav>
-</div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" placeholder="Enter your name" required>
+                </div>
 
-<!-- ══ MAIN ══ -->
-<main>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender" required>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
 
-  <!-- Global Preferences -->
-  <div class="global-fields">
-    <div class="form-group">
-      <label>Gender</label>
-      <select id="global-gender">
-        <option value="unspecified">Prefer not to say</option>
-        <option value="women">Women</option>
-        <option value="men">Men</option>
-        <option value="non-binary">Non-binary</option>
-      </select>
+                <div class="form-group">
+                    <label>Current Weather</label>
+                    <select name="weather" required>
+                        <option value="hot">Hot &amp; Sunny</option>
+                        <option value="cold">Cold &amp; Snowy</option>
+                        <option value="rain">Rainy</option>
+                        <option value="mild">Mild / Pleasant</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Skin Tone</label>
+                    <!-- ✅ name="skin_tone" matches request.form.get('skin_tone') in app.py -->
+                    <select name="skin_tone" required>
+                        <option value="fair">Fair</option>
+                        <option value="medium">Medium</option>
+                        <option value="olive">Olive</option>
+                        <option value="dark">Dark</option>
+                        <option value="warm">Warm Undertones</option>
+                        <option value="cool">Cool Undertones</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Body Shape</label>
+                    <select name="body_shape" required>
+                        <option value="hourglass">Hourglass</option>
+                        <option value="pear">Pear</option>
+                        <option value="apple">Apple</option>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="inverted_triangle">Inverted Triangle</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Occasion</label>
+                    <select name="occasion" required>
+                        <option value="casual">Casual / Daily Wear</option>
+                        <option value="gym">Gym / Workout</option>
+                        <option value="office">Office / Work</option>
+                        <option value="formal">Formal Event</option>
+                        <option value="date">Date Night</option>
+                        <option value="wedding">Wedding</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary">✨ Generate Outfit</button>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-      <label>Budget</label>
-      <select id="global-budget">
-        <option value="budget-friendly">Budget-friendly</option>
-        <option value="mid-range" selected>Mid-range</option>
-        <option value="premium">Premium</option>
-        <option value="luxury">Luxury</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Style Vibe</label>
-      <select id="global-style">
-        <option value="">Any</option>
-        <option value="classic & timeless">Classic & Timeless</option>
-        <option value="minimalist">Minimalist</option>
-        <option value="bohemian">Bohemian</option>
-        <option value="streetwear">Streetwear</option>
-        <option value="romantic">Romantic</option>
-        <option value="edgy & bold">Edgy & Bold</option>
-        <option value="preppy">Preppy</option>
-        <option value="cottagecore">Cottagecore</option>
-        <option value="athleisure">Athleisure</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════
-       PANEL: WEATHER
-  ═══════════════════════════════ -->
-  <div class="panel active" id="panel-weather">
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Weather Condition</label>
-        <select id="w-condition">
-          <option value="sunny and hot">☀️ Sunny & Hot</option>
-          <option value="warm and pleasant">🌤 Warm & Pleasant</option>
-          <option value="mild and breezy">🌬 Mild & Breezy</option>
-          <option value="cold and windy">🥶 Cold & Windy</option>
-          <option value="rainy">🌧 Rainy</option>
-          <option value="snowy">❄️ Snowy</option>
-          <option value="humid and tropical">🌴 Humid & Tropical</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Temperature Range</label>
-        <select id="w-temp">
-          <option value="below 5°C / 40°F">Below 5°C / 40°F</option>
-          <option value="5–15°C / 40–60°F">5–15°C / 40–60°F</option>
-          <option value="15–25°C / 60–75°F" selected>15–25°C / 60–75°F</option>
-          <option value="25–35°C / 75–95°F">25–35°C / 75–95°F</option>
-          <option value="above 35°C / 95°F">Above 35°C / 95°F</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Activity</label>
-        <select id="w-activity">
-          <option value="everyday casual">Everyday Casual</option>
-          <option value="work / office">Work / Office</option>
-          <option value="outdoor adventure">Outdoor Adventure</option>
-          <option value="social event">Social Event</option>
-          <option value="travel">Travel</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-generate" onclick="generate('weather')">
-      <span class="spinner"></span>Get Recommendations
-    </button>
-  </div>
-
-  <!-- ═══════════════════════════════
-       PANEL: SKIN TONE
-  ═══════════════════════════════ -->
-  <div class="panel" id="panel-skin_tone">
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Skin Tone</label>
-        <select id="st-tone">
-          <option value="fair / porcelain">Fair / Porcelain</option>
-          <option value="light / ivory">Light / Ivory</option>
-          <option value="light-medium / beige">Light-Medium / Beige</option>
-          <option value="medium / olive">Medium / Olive</option>
-          <option value="medium-dark / tan">Medium-Dark / Tan</option>
-          <option value="dark / brown">Dark / Brown</option>
-          <option value="deep / ebony">Deep / Ebony</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Undertone</label>
-        <select id="st-undertone">
-          <option value="cool (pink/bluish)">Cool (Pink/Bluish)</option>
-          <option value="warm (yellow/golden)">Warm (Yellow/Golden)</option>
-          <option value="neutral">Neutral</option>
-          <option value="unsure">Unsure</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Preferred Wardrobe</label>
-        <select id="st-wardrobe">
-          <option value="casual everyday">Casual Everyday</option>
-          <option value="professional">Professional</option>
-          <option value="evening & formal">Evening & Formal</option>
-          <option value="mixed">Mixed</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-generate" onclick="generate('skin_tone')">
-      <span class="spinner"></span>Get Recommendations
-    </button>
-  </div>
-
-  <!-- ═══════════════════════════════
-       PANEL: BODY SHAPE
-  ═══════════════════════════════ -->
-  <div class="panel" id="panel-body_shape">
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Body Shape</label>
-        <select id="bs-shape">
-          <option value="hourglass">Hourglass</option>
-          <option value="pear / triangle">Pear / Triangle</option>
-          <option value="apple / inverted triangle">Apple / Inverted Triangle</option>
-          <option value="rectangle / straight">Rectangle / Straight</option>
-          <option value="diamond">Diamond</option>
-          <option value="oval / round">Oval / Round</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Height</label>
-        <select id="bs-height">
-          <option value="petite (under 5'4&quot;)">Petite (under 5'4")</option>
-          <option value="average (5'4&quot; – 5'7&quot;)">Average (5'4" – 5'7")</option>
-          <option value="tall (above 5'7&quot;)">Tall (above 5'7")</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Styling Goal</label>
-        <select id="bs-goal">
-          <option value="balanced proportions">Balanced Proportions</option>
-          <option value="create curves">Create Curves</option>
-          <option value="minimize midsection">Minimize Midsection</option>
-          <option value="elongate the body">Elongate the Body</option>
-          <option value="highlight waist">Highlight Waist</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-generate" onclick="generate('body_shape')">
-      <span class="spinner"></span>Get Recommendations
-    </button>
-  </div>
-
-  <!-- ═══════════════════════════════
-       PANEL: GYM
-  ═══════════════════════════════ -->
-  <div class="panel" id="panel-gym">
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Workout Type</label>
-        <select id="g-type">
-          <option value="weightlifting / strength training">Weightlifting / Strength</option>
-          <option value="yoga / pilates">Yoga / Pilates</option>
-          <option value="running / cardio">Running / Cardio</option>
-          <option value="HIIT">HIIT</option>
-          <option value="cycling">Cycling</option>
-          <option value="CrossFit">CrossFit</option>
-          <option value="swimming">Swimming</option>
-          <option value="mixed training">Mixed Training</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Priority</label>
-        <select id="g-priority">
-          <option value="performance first">Performance First</option>
-          <option value="style + performance">Style + Performance</option>
-          <option value="comfort first">Comfort First</option>
-          <option value="fashion-forward gym look">Fashion-Forward</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Fit Preference</label>
-        <select id="g-fit">
-          <option value="fitted / compression">Fitted / Compression</option>
-          <option value="relaxed / oversized">Relaxed / Oversized</option>
-          <option value="athletic / tapered">Athletic / Tapered</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-generate" onclick="generate('gym')">
-      <span class="spinner"></span>Get Recommendations
-    </button>
-  </div>
-
-  <!-- ═══════════════════════════════
-       PANEL: OCCASION
-  ═══════════════════════════════ -->
-  <div class="panel" id="panel-occasion">
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Occasion Type</label>
-        <select id="oc-type">
-          <option value="black tie / gala">Black Tie / Gala</option>
-          <option value="cocktail party">Cocktail Party</option>
-          <option value="wedding guest">Wedding Guest</option>
-          <option value="job interview">Job Interview</option>
-          <option value="business meeting">Business Meeting</option>
-          <option value="first date">First Date</option>
-          <option value="brunch with friends">Brunch with Friends</option>
-          <option value="beach vacation">Beach Vacation</option>
-          <option value="music festival">Music Festival</option>
-          <option value="graduation ceremony">Graduation Ceremony</option>
-          <option value="casual dinner">Casual Dinner</option>
-          <option value="cultural / religious event">Cultural / Religious Event</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Season</label>
-        <select id="oc-season">
-          <option value="spring">Spring</option>
-          <option value="summer">Summer</option>
-          <option value="autumn">Autumn</option>
-          <option value="winter">Winter</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Desired Impression</label>
-        <select id="oc-impression">
-          <option value="elegant & sophisticated">Elegant & Sophisticated</option>
-          <option value="confident & powerful">Confident & Powerful</option>
-          <option value="approachable & friendly">Approachable & Friendly</option>
-          <option value="creative & unique">Creative & Unique</option>
-          <option value="romantic & soft">Romantic & Soft</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-generate" onclick="generate('occasion')">
-      <span class="spinner"></span>Get Recommendations
-    </button>
-  </div>
-
-  <!-- ═══════════════════════════════
-       PANEL: ACCESSORIES
-  ═══════════════════════════════ -->
-  <div class="panel" id="panel-accessories">
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Context / Event</label>
-        <select id="ac-context">
-          <option value="everyday casual">Everyday Casual</option>
-          <option value="office / work">Office / Work</option>
-          <option value="formal event">Formal Event</option>
-          <option value="date night">Date Night</option>
-          <option value="travel">Travel</option>
-          <option value="festival / outdoor">Festival / Outdoor</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Metal Preference</label>
-        <select id="ac-metal">
-          <option value="gold">Gold</option>
-          <option value="silver">Silver</option>
-          <option value="rose gold">Rose Gold</option>
-          <option value="mixed metals">Mixed Metals</option>
-          <option value="no preference">No Preference</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Bag Style</label>
-        <select id="ac-bag">
-          <option value="any">Any</option>
-          <option value="tote / shoulder bag">Tote / Shoulder Bag</option>
-          <option value="clutch">Clutch</option>
-          <option value="crossbody">Crossbody</option>
-          <option value="backpack">Backpack</option>
-          <option value="belt bag / fanny pack">Belt Bag</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Skin Tone (optional)</label>
-        <select id="ac-skin">
-          <option value="">Not specified</option>
-          <option value="fair">Fair</option>
-          <option value="light-medium">Light-Medium</option>
-          <option value="medium / olive">Medium / Olive</option>
-          <option value="dark / brown">Dark / Brown</option>
-          <option value="deep">Deep</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-generate" onclick="generate('accessories')">
-      <span class="spinner"></span>Get Recommendations
-    </button>
-  </div>
-
-  <!-- ══ RESULTS ══ -->
-  <div id="results">
-    <div class="results-header">
-      <h2 id="results-title">Your Curated Look</h2>
-      <span class="results-badge" id="results-badge">AI Styled</span>
-    </div>
-    <div id="results-body"></div>
-  </div>
-
-</main>
-
-<footer>© 2025 VOGUE·AI — Fashion Intelligence powered by Claude &nbsp;·&nbsp; All recommendations are AI-generated</footer>
-
-<!-- ══════════════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════════════ -->
-<script>
-const API_BASE = 'http://localhost:5000';
-
-/* ── Tab Switching ── */
-function switchTab(btn, panel) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('panel-' + panel).classList.add('active');
-  const res = document.getElementById('results');
-  res.classList.remove('visible');
-  res.style.display = 'none';
-}
-
-/* ── Read global preferences ── */
-function getGlobals() {
-  return {
-    gender:     document.getElementById('global-gender').value,
-    budget:     document.getElementById('global-budget').value,
-    style_pref: document.getElementById('global-style').value,
-  };
-}
-
-/* ── Build request payload per category ── */
-function buildPayload(category) {
-  const base = { ...getGlobals(), category };
-
-  switch(category) {
-    case 'weather':
-      base.weather = `${document.getElementById('w-condition').value}, ` +
-                     `temperature ${document.getElementById('w-temp').value}, ` +
-                     `activity: ${document.getElementById('w-activity').value}`;
-      break;
-
-    case 'skin_tone':
-      base.skin_tone   = `${document.getElementById('st-tone').value} with ${document.getElementById('st-undertone').value} undertone`;
-      base.extra_notes = `Wardrobe style: ${document.getElementById('st-wardrobe').value}`;
-      break;
-
-    case 'body_shape':
-      base.body_shape  = `${document.getElementById('bs-shape').value}, height: ${document.getElementById('bs-height').value}`;
-      base.extra_notes = `Styling goal: ${document.getElementById('bs-goal').value}`;
-      break;
-
-    case 'gym':
-      base.extra_notes = `Workout: ${document.getElementById('g-type').value}, ` +
-                         `Priority: ${document.getElementById('g-priority').value}, ` +
-                         `Fit: ${document.getElementById('g-fit').value}`;
-      break;
-
-    case 'occasion':
-      base.occasion    = document.getElementById('oc-type').value;
-      base.extra_notes = `Season: ${document.getElementById('oc-season').value}. ` +
-                         `Desired impression: ${document.getElementById('oc-impression').value}`;
-      break;
-
-    case 'accessories':
-      base.occasion    = document.getElementById('ac-context').value;
-      base.skin_tone   = document.getElementById('ac-skin').value;
-      base.extra_notes = `Metal preference: ${document.getElementById('ac-metal').value}. ` +
-                         `Bag style: ${document.getElementById('ac-bag').value}`;
-      break;
-  }
-
-  return base;
-}
-
-/* ── Main Generate Function ── */
-async function generate(category) {
-  const btn = document.querySelector(`#panel-${category} .btn-generate`);
-  btn.disabled = true;
-  btn.classList.add('loading');
-
-  const resultsEl = document.getElementById('results');
-  const bodyEl    = document.getElementById('results-body');
-  resultsEl.classList.remove('visible');
-  resultsEl.style.display = 'none';
-
-  try {
-    const res  = await fetch(`${API_BASE}/api/recommend`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(buildPayload(category))
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      renderResults(data.recommendation, category);
-    } else {
-      showError(bodyEl, resultsEl, 'Something went wrong. Please try again.');
-    }
-  } catch(e) {
-    showError(bodyEl, resultsEl,
-      `Could not connect to the backend. Make sure Flask is running on port 5000.<br><small>${e.message}</small>`);
-  } finally {
-    btn.disabled = false;
-    btn.classList.remove('loading');
-  }
-}
-
-function showError(bodyEl, resultsEl, msg) {
-  bodyEl.innerHTML = `<div class="error-box">⚠ ${msg}</div>`;
-  resultsEl.style.display = 'block';
-  resultsEl.classList.add('visible');
-}
-
-/* ── Render Results ── */
-function renderResults(rec, category) {
-  const titleMap = {
-    weather:     'Weather-Ready Outfits',
-    skin_tone:   'Color-Perfect Looks',
-    body_shape:  'Shape-Flattering Styles',
-    gym:         'Performance Gym Looks',
-    occasion:    'Occasion-Perfect Outfits',
-    accessories: 'Curated Accessories'
-  };
-
-  document.getElementById('results-title').textContent = titleMap[category] || 'Your Curated Look';
-  document.getElementById('results-badge').textContent  = rec.category || 'AI Styled';
-
-  let html = '';
-
-  if (rec.raw) {
-    html = `<div class="raw-result">${esc(rec.raw)}</div>`;
-  } else {
-
-    /* Outfit Cards */
-    if (rec.outfits && rec.outfits.length) {
-      html += `<div class="outfits-grid">`;
-      rec.outfits.forEach((o, i) => {
-        html += `<div class="outfit-card">
-          <div class="outfit-card-number">Look ${String(i+1).padStart(2,'0')}</div>
-          <h3>${esc(o.name || 'Untitled Look')}</h3>`;
-        [
-          ['Top',            o.top],
-          ['Bottom',         o.bottom || o.description],
-          ['Footwear',       o.footwear],
-          ['Accessories',    o.accessories],
-          ['Best For',       o.best_for],
-          ['Vibe',           o.vibe],
-          ['Silhouette Tip', o.silhouette_tip],
-          ['Why It Works',   o.why_it_works],
-          ['Tip',            o.tip],
-        ].forEach(([label, val]) => {
-          if (val) html += `<div class="outfit-detail">
-            <span class="outfit-detail-label">${label}</span>
-            <span class="outfit-detail-value">${esc(val)}</span>
-          </div>`;
-        });
-        html += `</div>`;
-      });
-      html += `</div>`;
-    }
-
-    /* Color Palette */
-    const colors = rec.color_palette || rec.best_colors;
-    if (colors && colors.length) {
-      html += `<div class="info-block"><h4>✦ Color Palette</h4>
-        <div class="pills">${colors.map(c => `<span class="pill gold">${esc(c)}</span>`).join('')}</div>`;
-      if (rec.avoid_colors && rec.avoid_colors.length) {
-        html += `<p style="font-size:.7rem;color:var(--muted);margin-top:.6rem;margin-bottom:.35rem;">Colors to avoid:</p>
-          <div class="pills">${rec.avoid_colors.map(c => `<span class="pill avoid">${esc(c)}</span>`).join('')}</div>`;
-      }
-      html += `</div>`;
-    }
-
-    /* Fabrics */
-    if (rec.fabrics && rec.fabrics.length) {
-      html += `<div class="info-block"><h4>✦ Recommended Fabrics</h4>
-        <div class="pills">${rec.fabrics.map(f => `<span class="pill good">${esc(f)}</span>`).join('')}</div>
-      </div>`;
-    }
-
-    /* Best Cuts */
-    if (rec.best_cuts && rec.best_cuts.length) {
-      html += `<div class="info-block"><h4>✦ Best Cuts & Silhouettes</h4>
-        <div class="pills">${rec.best_cuts.map(c => `<span class="pill good">${esc(c)}</span>`).join('')}</div>
-      </div>`;
-    }
-
-    /* Patterns */
-    if (rec.patterns && rec.patterns.length) {
-      html += `<div class="info-block"><h4>✦ Recommended Patterns</h4>
-        <div class="pills">${rec.patterns.map(p => `<span class="pill">${esc(p)}</span>`).join('')}</div>
-      </div>`;
-    }
-
-    /* Structured Accessories */
-    if (rec.jewelry || rec.bags || rec.eyewear || rec.headwear) {
-      html += `<div class="info-block"><h4>✦ Accessories Guide</h4><div class="acc-grid">`;
-      [
-        ['💍 Jewelry',  rec.jewelry],
-        ['👜 Bags',     rec.bags],
-        ['👟 Footwear', rec.footwear],
-        ['🕶 Eyewear',  rec.eyewear],
-        ['👒 Headwear', rec.headwear],
-      ].forEach(([label, items]) => {
-        if (items && items.length) {
-          html += `<div class="acc-card"><div class="acc-card-cat">${label}</div>`;
-          items.forEach(item => {
-            html += `<h4>${esc(item.item || '')}</h4><p>${esc(item.why || '')}</p>`;
-          });
-          html += `</div>`;
-        }
-      });
-      html += `</div></div>`;
-    }
-
-    /* Avoid */
-    if (rec.avoid && rec.avoid.length) {
-      html += `<div class="info-block"><h4>✦ What to Avoid</h4>
-        <div class="pills">${rec.avoid.map(a => `<span class="pill avoid">${esc(a)}</span>`).join('')}</div>
-      </div>`;
-    }
-
-    /* Dos & Don'ts */
-    const dos   = rec.styling_dos   || rec.performance_tips || [];
-    const donts = rec.styling_donts || [];
-    if (dos.length || donts.length) {
-      html += `<div class="info-block"><h4>✦ Styling Guide</h4>`;
-      if (dos.length)   html += `<p style="font-weight:500;font-size:.7rem;color:var(--sage);margin-bottom:.3rem;">DO</p>
-        <div class="pills">${dos.map(d => `<span class="pill good">${esc(d)}</span>`).join('')}</div>`;
-      if (donts.length) html += `<p style="font-weight:500;font-size:.7rem;color:#c06060;margin:.7rem 0 .3rem;">AVOID</p>
-        <div class="pills">${donts.map(d => `<span class="pill avoid">${esc(d)}</span>`).join('')}</div>`;
-      html += `</div>`;
-    }
-
-    /* Brands */
-    if (rec.brands_to_explore && rec.brands_to_explore.length) {
-      html += `<div class="info-block"><h4>✦ Brands to Explore</h4>
-        <div class="pills">${rec.brands_to_explore.map(b => `<span class="pill gold">${esc(b)}</span>`).join('')}</div>
-      </div>`;
-    }
-
-    /* Pro Tip */
-    const tip = rec.pro_tip || rec.makeup_tip || rec.styling_goal || rec.dress_code;
-    if (tip) {
-      html += `<div class="tip-block"><p>✦ ${esc(tip)}</p></div>`;
-    }
-  }
-
-  const bodyEl    = document.getElementById('results-body');
-  const resultsEl = document.getElementById('results');
-  bodyEl.innerHTML    = html;
-  resultsEl.style.display = 'block';
-  setTimeout(() => resultsEl.classList.add('visible'), 10);
-  resultsEl.scrollIntoView({ behavior:'smooth', block:'start' });
-}
-
-/* ── HTML Escape ── */
-function esc(str) {
-  return String(str || '')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
-</script>
 </body>
 </html>
